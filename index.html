@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CAFFE ELL - Kasir</title>
+<style>
+*{box-sizing:border-box;font-family:Arial,sans-serif}
+body{margin:0;background:#EBE8E4}
+.hidden{display:none!important}
+/* LOGIN */
+#loginPage{min-height:100vh;background:#3E2723;display:flex;align-items:center;justify-content:center;padding:20px}
+.login-box{background:#fff;width:360px;max-width:100%;padding:28px 32px;border-radius:8px;text-align:center;box-shadow:0 10px 30px rgba(0,0,0,.3)}
+.login-box h1{font-family:Georgia,serif;font-size:36px;margin:0;color:#3E2723}
+.login-box p{margin:4px 0 18px;color:#666}
+.login-box label{display:block;text-align:left;margin:10px 0 5px;font-size:13px;font-weight:bold}
+.login-box input,.login-box select{width:100%;padding:11px;border:1px solid #ccc;border-radius:6px}
+.btn-login{width:100%;background:#3E2723;color:#fff;border:0;padding:12px;border-radius:6px;margin-top:20px;font-weight:bold;cursor:pointer}
+.info{font-size:12px;color:#666;margin-top:14px;line-height:1.6}
+/* HEADER */
+header{background:#191C20;color:#fff;display:flex;justify-content:space-between;align-items:center;padding:12px 16px}
+header b{font-family:Georgia,serif;font-size:20px}
+header span{color:#ccc;font-size:12px}
+/* ADMIN */
+#adminBar{background:#FFF3CD;padding:10px 14px;border-bottom:1px solid #e6c87a;display:flex;flex-wrap:wrap;gap:10px;align-items:center;font-size:13px}
+#adminBar button{padding:7px 10px;border:1px solid #999;background:#fff;cursor:pointer;border-radius:5px}
+/* MAIN */
+.main{display:grid;grid-template-columns:1.15fr 1fr 1fr;gap:6px;padding:6px}
+.col{background:#fff;border-radius:6px;padding:10px;min-height:520px}
+.search-row{display:flex;gap:6px}
+.search-row input{flex:1;padding:9px;border:1px solid #ccc;border-radius:5px}
+.search-row button{background:#2d2d2d;color:#fff;border:0;padding:9px 12px;border-radius:5px;cursor:pointer}
+.cats{display:grid;grid-template-columns:repeat(4,1fr);gap:5px;margin:10px 0}
+.cats button{padding:9px;border:1px solid #ddd;background:#fff;border-radius:5px;cursor:pointer}
+.cats button.active{background:#32465F;color:#fff}
+.menu-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.menu-item{border:1px solid #ddd;border-radius:6px;padding:10px;text-align:center;cursor:pointer;background:#fff}
+.menu-item:hover{border-color:#32465F}
+.menu-item b{display:block}
+.menu-item small{color:#666}
+.menu-item .price{color:#111;font-weight:bold;margin-top:4px}
+.menu-item:disabled{opacity:.45;cursor:not-allowed}
+.detail-grid{display:grid;grid-template-columns:90px 1fr;gap:6px;background:#FFF8E1;padding:8px;border-radius:6px}
+.detail-grid input,.detail-grid select{padding:8px;border:1px solid #ccc;border-radius:5px;width:100%}
+table{width:100%;border-collapse:collapse;font-size:13px;margin-top:8px}
+th{background:#32465F;color:#fff;padding:8px;text-align:left}
+td{padding:7px;border-bottom:1px solid #eee}
+tr.selected{background:#FFE9A8}
+.qty-row{display:flex;gap:6px;margin-top:8px;flex-wrap:wrap}
+.qty-row button{flex:1;padding:9px;border:0;border-radius:5px;cursor:pointer}
+.note-row{display:flex;gap:6px;margin-top:8px}
+.note-row input{flex:1;padding:8px;border:1px solid #ccc;border-radius:5px}
+.note-row button{padding:8px 10px;background:#333;color:#fff;border:0;border-radius:5px}
+.pay-box label{display:flex;justify-content:space-between;padding:7px 0;font-size:14px}
+.pay-box .total{font-size:18px;font-weight:bold;border-top:1px solid #ddd;padding-top:10px}
+.metode{display:grid;grid-template-columns:1fr 1fr 1fr;gap:5px}
+.metode button{padding:10px;border:0;border-radius:5px;color:#fff;cursor:pointer;font-weight:bold}
+.btn-tunai{background:#8CA0AA}.btn-debit{background:#466EA0}.btn-qris{background:#6E5AA0}
+.btn-bayar{width:100%;background:#322D2D;color:#fff;padding:13px;border:0;border-radius:6px;font-weight:bold;cursor:pointer;margin-top:10px}
+.btn-batal,.btn-logout{width:100%;padding:10px;margin-top:8px;border:1px solid #ccc;background:#fff;border-radius:6px;cursor:pointer}
+.riwayat{background:#f7f7f7;border:1px solid #eee;padding:8px;height:90px;overflow:auto;font-size:12px;white-space:pre-wrap;margin-top:6px}
+select#metode{padding:8px}
+/* MODAL */
+.modal{position:fixed;inset:0;background:rgba(0,0,0,.6);display:flex;align-items:center;justify-content:center;padding:16px;z-index:99}
+.modal-card{background:#fff;width:400px;max-width:100%;border-radius:10px;overflow:hidden;max-height:90vh;overflow:auto}
+.modal-head{background:#009650;color:#fff;text-align:center;padding:16px}
+.modal-head h2{margin:0}.qr-box{text-align:center;padding:14px}
+.qr{width:200px;height:200px;margin:0 auto;background:#fff;border:2px solid #000;display:grid;grid-template-columns:repeat(21,1fr);grid-template-rows:repeat(21,1fr)}
+.qr div{background:#fff}.qr div.b{background:#000}
+.modal-body{padding:14px}
+.modal-body pre{font-family:monospace;font-size:12px;background:#f9f9f9;padding:10px;border-radius:6px}
+.modal-btns{display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:0 14px 14px}
+.modal-btns button{padding:11px;border:0;border-radius:6px;cursor:pointer;font-weight:bold}
+.btn-print{background:#009650;color:#fff}
+.kelola-table input{width:100%;padding:7px}
+@media(max-width:900px){.main{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<div id="loginPage">
+  <div class="login-box">
+    <h1>caffe ell</h1>
+    <p>Coffee - Food - Good Vibes</p>
+    <label>Login Sebagai:</label>
+    <select id="role"><option>Kasir</option><option>Admin</option></select>
+    <label>Username:</label><input id="user" placeholder="kasir / admin">
+    <label>Password:</label><input id="pass" type="password" placeholder="1234">
+    <button class="btn-login" onclick="doLogin()">MASUK &gt;&gt;</button>
+    <div class="info">Kasir : kasir / 1234<br>Admin : admin / 1234</div>
+  </div>
+</div>
+
+<!-- APP -->
+<div id="appPage" class="hidden">
+<header><b>&nbsp; CAFFE ELL • KASIR</b><span id="headerInfo">No. Struk: TRX-0001 | Kasir: kasir</span></header>
+<div id="adminBar" class="hidden">
+  <b>ADMIN |</b> <span id="lblOmset">Omset Hari Ini: Rp 0</span> <span id="lblTransaksi">Total Transaksi: 0</span> <span id="lblTerlaris">Menu Terlaris: -</span>
+  <button onclick="lihatLaporan()">Lihat Laporan Lengkap</button>
+  <button onclick="openKelola()">Kelola Menu</button>
+</div>
+<div class="main">
+  <!-- KIRI -->
+  <div class="col">
+    <div class="search-row"><input id="txtCari" placeholder="Cari menu / scan barcode..." oninput="tampilMenu()"><button onclick="tampilMenu()">CARI</button></div>
+    <div class="cats" id="catBtns"></div>
+    <div class="menu-grid" id="menuGrid"></div>
+  </div>
+  <!-- TENGAH -->
+  <div class="col">
+    <b>Keranjang Belanja</b>
+    <div class="detail-grid" style="margin-top:8px">
+      <span>Nama Pelanggan:</span><input id="namaPel">
+      <span>Meja:</span><select id="meja"><option>Take Away</option><option>Meja 1</option><option>Meja 2</option><option>Meja 3</option><option>Meja 4</option><option>Meja 5</option><option>Meja 6</option><option>Meja 7</option><option>Meja 8</option><option>Meja 9</option><option>Meja 10</option></select>
+      <span>Jenis:</span><select id="jenis"><option>Dine In</option><option>Take Away</option><option>GoFood / GrabFood</option></select>
+    </div>
+    <table><thead><tr><th>Kode</th><th>Nama</th><th>Qty</th><th>Subtotal</th></tr></thead><tbody id="cartBody"></tbody></table>
+    <div class="note-row"><input id="catatan" placeholder="Catatan: Less Sugar..."><button onclick="tambahCatatan()">Tambah Catatan</button></div>
+    <div class="qty-row"><button style="background:#8CA0AA;color:#fff" onclick="ubahQty(1)">+ Tambah Qty</button><button onclick="ubahQty(-1)">- Kurang Qty</button><button style="background:#AA645F;color:#fff" onclick="hapusItem()">Hapus</button></div>
+  </div>
+  <!-- KANAN -->
+  <div class="col pay-box">
+    <b>Pembayaran</b>
+    <div style="margin-top:8px">Diskon %: <input id="diskon" value="0" style="width:60px;padding:7px" oninput="hitungTotal()"></div>
+    <label><span>Subtotal:</span><span id="lblSub">Rp 0</span></label>
+    <label><span>Diskon:</span><span id="lblDisk">- Rp 0</span></label>
+    <label><span>Service 5%:</span><span id="lblService">Rp 0</span></label>
+    <label><span>Pajak 10%:</span><span id="lblPajak">Rp 0</span></label>
+    <label class="total"><span>TOTAL BAYAR:</span><span id="lblTotal">Rp 0</span></label>
+    <div class="metode"><button class="btn-tunai" onclick="setMetode('TUNAI')">TUNAI</button><button class="btn-debit" onclick="setMetode('DEBIT')">DEBIT</button><button class="btn-qris" onclick="setMetode('QRIS')">QRIS</button></div>
+    <div style="margin-top:10px">Metode Dipilih: <select id="metode"><option>TUNAI</option><option>DEBIT</option><option>QRIS</option></select></div>
+    <button class="btn-bayar" onclick="bayar()">BAYAR SEKARANG</button>
+    <button class="btn-batal" onclick="batal()">Batalkan Transaksi</button>
+    <div style="margin-top:10px"><b>Riwayat:</b><div class="riwayat" id="riwayat"></div></div>
+    <button class="btn-logout" onclick="logout()">Logout</button>
+  </div>
+</div>
+</div>
+
+<!-- MODAL QRIS -->
+<div id="qrisModal" class="modal hidden">
+  <div class="modal-card">
+    <div class="modal-head"><h2>PEMBAYARAN BERHASIL</h2><div>QRIS - KALA CAFE</div></div>
+    <div class="qr-box"><div class="qr" id="qrGrid"></div><b>KALA CAFE - QRIS</b><br><small>Scan pakai GoPay / OVO / Dana / BCA</small></div>
+    <div class="modal-body"><pre id="qrisDetail"></pre></div>
+    <div class="modal-btns"><button class="btn-print" onclick="window.print()">PRINT BUKTI</button><button onclick="closeQris()">Tutup</button></div>
+  </div>
+</div>
+
+<!-- MODAL KELOLA -->
+<div id="kelolaModal" class="modal hidden">
+  <div class="modal-card" style="width:620px">
+    <div style="padding:16px"><h2 style="margin:0">Kelola Menu - ADMIN</h2>
+    <table><thead><tr><th>Kode</th><th>Nama</th><th>Harga</th><th>Kategori</th><th>Stok</th></tr></thead><tbody id="kelolaBody"></tbody></table>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:10px" class="kelola-table">
+      <input id="fKode" placeholder="Kode (ex: D401)"><input id="fNama" placeholder="Nama Menu">
+      <input id="fHarga" placeholder="Harga" type="number"><select id="fKat"><option>Minuman</option><option>Makanan</option><option>Snack</option></select>
+      <input id="fStok" placeholder="Stok" type="number">
+    </div>
+    <div style="display:flex;gap:6px;margin-top:10px;flex-wrap:wrap"><button onclick="tambahMenu()">Tambah Menu</button><button onclick="hapusMenuTerpilih()">Hapus Terpilih</button><button onclick="tambahStok()">+10 Stok</button><button onclick="closeKelola()">Tutup</button></div>
+    </div>
+  </div>
+</div>
+
+<script>
+let allMenu=[
+{kode:"A101",nama:"Kopi Espresso",kategori:"Minuman",harga:15000,stok:20},
+{kode:"A102",nama:"Cappuccino",kategori:"Minuman",harga:20000,stok:20},
+{kode:"A103",nama:"Caffe Latte",kategori:"Minuman",harga:22000,stok:20},
+{kode:"A104",nama:"Americano",kategori:"Minuman",harga:18000,stok:20},
+{kode:"A105",nama:"Matcha Latte",kategori:"Minuman",harga:25000,stok:15},
+{kode:"A107",nama:"Teh Manis
